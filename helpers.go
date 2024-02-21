@@ -25,6 +25,35 @@ func NewMessage(chatID int64, text string) MessageConfig {
 	}
 }
 
+// NewMessage creates a new Message.
+//
+// chatID is where to send it, text is the message text.
+func NewMessageToThread(chatID int64, thread int, text string) MessageConfig {
+	return MessageConfig{
+		BaseChat: BaseChat{
+			ChatID:           chatID,
+			MessageThreadID:  thread,
+			ReplyToMessageID: 0,
+		},
+		Text:                  text,
+		DisableWebPagePreview: false,
+	}
+}
+
+type Emoji string
+
+// Reaction emoji. Currently, it can be one of
+func SetMessageReaction(chatID int64, messageID int, emoji Emoji) ReactionConfig {
+	return ReactionConfig{
+		BaseChat: BaseChat{
+			ChatID: chatID,
+		},
+		MessageID: messageID,
+		Reaction:  []ReactionType{{Type: "emoji", Emoji: string(emoji)}},
+		Big:       false,
+	}
+}
+
 // NewDeleteMessage creates a request to delete a message.
 func NewDeleteMessage(chatID int64, messageID int) DeleteMessageConfig {
 	return DeleteMessageConfig{
@@ -178,8 +207,10 @@ func NewVoice(chatID int64, file RequestFileData) VoiceConfig {
 // two to ten InputMediaPhoto or InputMediaVideo.
 func NewMediaGroup(chatID int64, files []interface{}) MediaGroupConfig {
 	return MediaGroupConfig{
-		ChatID: chatID,
-		Media:  files,
+		BaseChat: BaseChat{
+			ChatID: chatID,
+		},
+		Media: files,
 	}
 }
 
